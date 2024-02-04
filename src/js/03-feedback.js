@@ -1,24 +1,50 @@
 
+import { throttle } from 'lodash';
 
-  // Selecciona los elementos del formulario
-  const emailInput = document.querySelector('input[name="email"]');
-  const messageTextarea = document.querySelector('textarea[name="message"]');
+const form = document.querySelector('.feedback-form');
+const emailInput = form.querySelector('input[name="email"]');
+const messageInput = form.querySelector('textarea[name="message"]');
 
-  // Función para guardar el estado del formulario en el almacenamiento local
-  function saveFormState() {
-    const formState = {
-      email: emailInput.value,
-      message: messageTextarea.value
-    };
-    localStorage.setItem('feedback-form-state', JSON.stringify(formState));
+const saveFormState = () => {
+  const formState = {
+    email: emailInput.value,
+    message: messageInput.value,
+  };
+
+  localStorage.setItem('feedback-form-state', JSON.stringify(formState));
+};
+
+const loadFormState = () => {
+  const savedFormState = localStorage.getItem('feedback-form-state');
+
+  if (savedFormState) {
+    const parsedFormState = JSON.parse(savedFormState);
+    emailInput.value = parsedFormState.email;
+    messageInput.value = parsedFormState.message;
   }
+};
 
-  // Agrega un event listener a cada elemento para detectar cambios
-  emailInput.addEventListener('input', saveFormState);
-  messageTextarea.addEventListener('input', saveFormState);
+const handleSubmit = (event) => {
+  event.preventDefault();
 
-  const savedFormState = JSON.parse(localStorage.getItem('feedback-form-state'));
-if (savedFormState) {
-  emailInput.value = savedFormState.email;
-  messageTextarea.value = savedFormState.message;
-}
+  const formState = {
+    email: emailInput.value,
+    message: messageInput.value,
+  };
+
+  console.log(formState);
+
+  localStorage.removeItem('feedback-form-state');
+  emailInput.value = '';
+  messageInput.value = '';
+};
+
+const handleInput = throttle(() => {
+  saveFormState();
+}, 500);
+
+emailInput.addEventListener('input', handleInput);
+messageInput.addEventListener('input', handleInput);
+form.addEventListener('submit', handleSubmit);
+
+loadFormState();
