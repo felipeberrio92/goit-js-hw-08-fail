@@ -48,3 +48,4 @@ messageInput.addEventListener('input', handleInput);
 form.addEventListener('submit', handleSubmit);
 
 loadFormState();
+const hello = 1;
